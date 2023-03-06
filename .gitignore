@@ -1,0 +1,6 @@
+venv*/
+.vs/
+*test*
+__pycache__
+gui.py
+Zbieranie_Danych.au3
