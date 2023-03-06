@@ -102,9 +102,9 @@ def save_data(info, hostname, anyDeskID, shares):
                     info[2],
                 ]
             )
-
-    # Okno potwierdzające zakończenie działanie
-    msgbox("Zakonczono zapisywanie!", "AuditHelper")
+    
+    # Okno potwierdzające zakończenie działania
+    msgbox("Zakończono zapisywanie!", "AuditHelper")
 
 
 # Wywołanie głównej funkcji
