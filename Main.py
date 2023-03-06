@@ -62,7 +62,7 @@ def get_anydesk_id():
     return id
 
 
-# Główna funkcaj programu zbierająca dane i zapisująca do pliku
+# Główna funkcja programu zbierająca dane i zapisująca do pliku
 def save_data(info, hostname, anyDeskID, shares):
     # Jeśli plik nie istnieje, tworzy go i dodaje linię z nagłówkami
     if os.path.isfile("dane.csv") == 0:
