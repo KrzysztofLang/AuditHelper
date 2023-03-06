@@ -4,5 +4,4 @@ venv*/
 __pycache__
 gui.py
 Zbieranie_Danych.au3
-dane*
 dane.csv
