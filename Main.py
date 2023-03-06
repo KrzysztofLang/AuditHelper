@@ -56,12 +56,19 @@ def get_anydesk_id():
 
     return id
 
+
 # Główna funkcaj programu zbierająca dane i zapisująca do pliku
 def save_data(info, hostname, anyDeskID, shares):
     # Jeśli plik nie istnieje, tworzy go i dodaje linię z nagłówkami
     if os.path.isfile("dane.csv") == 0:
         with open("dane.csv", "w") as dane:
-            dane_writer = csv.writer(dane)
+            dane_writer = csv.writer(
+                dane,
+                delimiter=",",
+                quotechar='"',
+                quoting=csv.QUOTE_MINIMAL,
+                lineterminator="\n",
+            )
             dane_writer.writerow(
                 [
                     "Nazwa BetterIT",
@@ -76,7 +83,13 @@ def save_data(info, hostname, anyDeskID, shares):
 
     # Zapisuje zebrane dane do pliku
     with open("dane.csv", "a") as dane:
-        dane_writer = csv.writer(dane)
+        dane_writer = csv.writer(
+            dane,
+            delimiter=",",
+            quotechar='"',
+            quoting=csv.QUOTE_MINIMAL,
+            lineterminator="\n",
+        )
         for share in shares:
             dane_writer.writerow(
                 [
@@ -89,6 +102,10 @@ def save_data(info, hostname, anyDeskID, shares):
                     info[2],
                 ]
             )
+
+    # Okno potwierdzające zakończenie działanie
+    msgbox("Zakonczono zapisywanie!", "AuditHelper")
+
 
 # Wywołanie głównej funkcji
 save_data(
