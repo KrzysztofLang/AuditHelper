@@ -25,6 +25,7 @@ def get_user_info():
 # zwracane jako lista
 def get_network_shares():
     resume = 0
+    drives = 0
     (drives, total, resume) = wn.NetUseEnum(None, 0, resume)
     return drives
 
@@ -49,6 +50,10 @@ def get_anydesk_id():
     # Odczytanie AnyDesk ID z pliku
     with open("AnyDeskID.txt", "r") as f:
         id = f.read().rstrip()
+
+    # Weryfikacja czy udało się odczytać numer
+    if not id.isnumeric():
+        id = ""
 
     # Usunięcie plików tymczasowych
     os.remove("GetAnyDeskID.bat")
@@ -90,19 +95,32 @@ def save_data(info, hostname, anyDeskID, shares):
             quoting=csv.QUOTE_MINIMAL,
             lineterminator="\n",
         )
-        for share in shares:
+        if shares:
+            for share in shares:
+                dane_writer.writerow(
+                    [
+                        info[0],
+                        info[1],
+                        hostname,
+                        anyDeskID,
+                        share["local"],
+                        share["remote"],
+                        info[2],
+                    ]
+                )
+        else:
             dane_writer.writerow(
                 [
                     info[0],
                     info[1],
                     hostname,
                     anyDeskID,
-                    share["local"],
-                    share["remote"],
+                    "",
+                    "",
                     info[2],
                 ]
             )
-    
+
     # Okno potwierdzające zakończenie działania
     msgbox("Zakończono zapisywanie!", "AuditHelper")
 
