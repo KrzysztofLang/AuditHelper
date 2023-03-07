@@ -11,7 +11,20 @@ import csv
 
 class InstallTools:
     def __init__(self) -> None:
-        exit()
+        self.check_installs()
+
+    def check_installs(self):
+        self.anydesk = os.path.exists("C:\Program Files (x86)\AnyDesk-c035baa3")
+        self.nvision = os.path.exists("C:\Program Files (x86)\Axence")
+        if "State" in su.check_output(["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", '-Command', '&{Get-ScheduledTask -TaskPath \* | where taskname -eq "OpenAudIT" | select state;}']):
+            self.openaudit = true
+        else:
+            self.openaudit = false
+            
+        print("Czy wykryto AnyDesk: ", self.anydesk)
+        print("Czy wykryto nVision: ", self.nvision)
+        print("Czy wykryto OpenAudIT: ", self.openaudit)
+
 
 
 class GetInfo:
@@ -137,4 +150,5 @@ class GetInfo:
 
 
 # Wywołanie głównej funkcji
-getInfo = GetInfo()
+install = InstallTools()
+# getInfo = GetInfo()
