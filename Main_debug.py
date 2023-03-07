@@ -8,14 +8,37 @@ import subprocess as su
 import os
 import csv
 
+# Klasa odpowiadająca za instalację oprogramowania
+class InstallTools:
+    def __init__(self) -> None:
+        # Wywołanie funkcji sprawdzającej czy zainstalowano nVision i AnyDesk
+        self.check_installs()
+        print("Czy wykryto AnyDesk: ", self.anydesk)
+        print("Czy wykryto nVision: ", self.nvision)
+
+    def check_installs(self):
+        
+        # Sprawdzenie czy zainstalowano AnyDesk
+        self.anydesk = os.path.exists(
+            "C:\Program Files (x86)\AnyDesk-c035baa3"
+        )
+
+        # Sprawdzenie czy zainstalowano nVision
+        self.nvision = os.path.exists("C:\Program Files (x86)\Axence")
+
+
+
 # Klasa odpowiadająca za zebranie danych
 class GetInfo:
     def __init__(self) -> None:
         # Wywołanie głównej funkcji
+        self.get_user_info()
+        self.get_network_shares()
+        self.hostname = so.gethostname()
+        self.get_anydesk_id()
+        self.pwd = "test"
         print("Wywołuję główną funkcję")
-        self.save_data(
-            self.get_user_info(), so.gethostname(), self.get_anydesk_id(), self.get_network_shares()
-        )
+        self.save_data()
 
     # Okno programu do wpisania informacji o komputerze
     def get_user_info(self):
@@ -23,21 +46,18 @@ class GetInfo:
         msg = "Wprowadź potrzebne dane"
         title = "AuditHelper"
         fieldNames = ["Nazwa BetterIT", "Użytkownik odpowiedzialny", "Uwagi"]
-        fieldValues = []
 
         # Wyświetlenie okna, zwrócenie wpisanych informacji
         print("Wyświetlam okno do wpisania informacji")
-        return multenterbox(msg, title, fieldNames)
-
+        self.info = multenterbox(msg, title, fieldNames)
 
     # Zebranie informacji o podpiętych udziałąch sieciowych,
     # zwracane jako lista
     def get_network_shares(self):
         print("Odczytuję mapowane dyski")
         resume = 0
-        drives = 0
-        (drives, total, resume) = wn.NetUseEnum(None, 0, resume)
-        return drives
+        self.shares = 0
+        (self.shares, total, resume) = wn.NetUseEnum(None, 0, resume)
 
 
     # Sprawdzenie AnyDesk ID
@@ -62,27 +82,24 @@ class GetInfo:
         # Odczytanie AnyDesk ID z pliku
         print("Odczytuję ID z pliku")
         with open("AnyDeskID.txt", "r") as f:
-            id = f.read().rstrip()
+            self.anyDeskID = f.read().rstrip()
 
-        print(id)
-        print("Czy poprawnie odczytano ID:", id.isnumeric())
+        print(self.anyDeskID)
+        print("Czy poprawnie odczytano ID:", self.anyDeskID.isnumeric())
 
         # Weryfikacja czy udało się odczytać numer
-        if not id.isnumeric():
-            id = ""
+        if not self.anyDeskID.isnumeric():
+            self.anyDeskID = ""
 
         # Usunięcie plików tymczasowych
         print("Usuwam pliki tymczasowe")
         os.remove("GetAnyDeskID.bat")
         os.remove("AnyDeskID.txt")
 
-        return id
-
 
     # Główna funkcaj programu zbierająca dane i zapisująca do pliku
-    def save_data(self, info, hostname, anyDeskID, shares):
+    def save_data(self):
         # Jeśli plik nie istnieje, tworzy go i dodaje linię z nagłówkami
-
         print("Sprawdzam istnienie pliku")
         if os.path.isfile("dane.csv") == 0:
             print("Plik nie istnieje, tworzę")
@@ -97,11 +114,12 @@ class GetInfo:
                 dane_writer.writerow(
                     [
                         "Nazwa BetterIT",
-                        "Uzytkownik odpowiedzialny",
+                        "Użytkownik odpowiedzialny",
                         "Hostname",
                         "AnyDesk ID",
-                        "Udzial sieciowy lokalny",
-                        "Udzial sieciowy zdalny",
+                        "Udział sieciowy lokalny",
+                        "Udział sieciowy zdalny",
+                        "Hasło BITAdmin",
                         "Uwagi",
                     ]
                 )
@@ -117,31 +135,33 @@ class GetInfo:
                 quoting=csv.QUOTE_MINIMAL,
                 lineterminator="\n",
             )
-            print(shares)
-            if shares:
-                for share in shares:
+            print(self.shares)
+            if self.shares:
+                for share in self.shares:
                     dane_writer.writerow(
                         [
-                            info[0],
-                            info[1],
-                            hostname,
-                            anyDeskID,
+                            self.info[0],
+                            self.info[1],
+                            self.hostname,
+                            self.anyDeskID,
                             share["local"],
                             share["remote"],
-                            info[2],
+                            self.pwd,
+                            self.info[2],
                         ]
                     )
                     print("Zapisano linię danych - znaleziono dyski sieciowe")
             else:
                 dane_writer.writerow(
                     [
-                        info[0],
-                        info[1],
-                        hostname,
-                        anyDeskID,
+                        self.info[0],
+                        self.info[1],
+                        self.hostname,
+                        self.anyDeskID,
                         "",
                         "",
-                        info[2],
+                        self.pwd,
+                        self.info[2],
                     ]
                 )
                 print("Zapisano linię danych - brak dysków sieciowych")
@@ -150,8 +170,7 @@ class GetInfo:
         print("Zakończono zapisywanie")
         msgbox("Zakończono zapisywanie!", "AuditHelper")
 
-
-
-getInfo = GetInfo()
+# install = InstallTools()
+info = GetInfo()
 print("Zakończono program")
 os.system("pause")
