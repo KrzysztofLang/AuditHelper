@@ -5,3 +5,4 @@ __pycache__
 gui.py
 Zbieranie_Danych.au3
 dane.csv
+output/
