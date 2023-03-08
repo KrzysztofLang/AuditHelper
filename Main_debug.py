@@ -32,26 +32,58 @@ class InstallTools:
     def install(self):
         # Instalowanie AnyDesk
         if not self.anydesk:
-            command = """xcopy "anydesk" "C:\BIT\"
-            msiexec /i "C:\BIT\AnyDesk_BetterIT_ACL.msi" /quiet"""
-            print(command)
-            exec = su.Popen(["powershell", "& {" + command + "}"])
-            exec.wait()
+            # Utworzenie pliku ze skryptem instalującym AnyDesk
+            print("Tworzę plik ze skryptem - instalacja AnyDesk")
+            lines = [
+                "@echo off",
+                'xcopy "%~dp0\\anydesk" "C:\BIT\\" /y',
+                'msiexec/i "C:\BIT\AnyDesk_BetterIT_ACL.msi" /quiet',
+            ]
+            with open("InstallAnyDesk.bat", "w") as f:
+                for line in lines:
+                    f.write(line)
+                    f.write("\n")
+
+            print("Uruchamiam skrypt")
+            # Uruchomienie skryptu
+            su.run("InstallAnyDesk.bat")
+            os.remove("InstallAnyDesk.bat")
 
         # Instalowanie nVision
         if not self.nvision:
-            command = """xcopy "nVision" "C:\BIT\"
-            msiexec /i "C:\BIT\nVAgentInstall.msi" /quiet"""
-            print(command)
-            exec = su.Popen(["powershell", "& {" + command + "}"])
-            exec.wait()
+            # Utworzenie pliku ze skryptem instalujacym nVision
+            print("Tworzę plik ze skryptem - instalacja nVision")
+            lines = [
+                "@echo off",
+                'xcopy "%~dp0\\nVision" "C:\BIT\\" /y',
+                'msiexec/i "C:\BIT\\nVAgentInstall.msi" /quiet',
+            ]
+            with open("InstallNvision.bat", "w") as f:
+                for line in lines:
+                    f.write(line)
+                    f.write("\n")
+
+            print("Uruchamiam skrypt")
+            # Uruchomienie skryptu
+            su.run("InstallNvision.bat")
+            os.remove("InstallNvision.bat")
 
         # Dodanie zadania harmonogramu OpenAudIT
-        command = """xcopy "openaudit" "C:\BIT\"
-        start /w "" "C:\BIT\INSTALL.bat" """
-        print(command)
-        exec = su.Popen(["powershell", "& {" + command + "}"])
-        exec.wait()
+        print("Tworzę plik ze skryptem - instalacja OpenAudIT")
+        lines = [
+            "@echo off",
+            'xcopy "%~dp0\\openaudit" "C:\BIT\\" /y',
+        ]
+        with open("InstallOpenaudit.bat", "w") as f:
+            for line in lines:
+                f.write(line)
+                f.write("\n")
+
+        print("Uruchamiam skrypt")
+        # Uruchomienie skryptu
+        su.run("InstallOpenaudit.bat")
+        su.run("C:\BIT\INSTALL.bat")
+        os.remove("InstallOpenaudit.bat")
 
     def create_user(self):
         # Generowanie hasła
@@ -211,7 +243,7 @@ class GetInfo:
         msgbox("Zakończono zapisywanie!", "AuditHelper")
 
 
-install = InstallTools()
-# info = GetInfo(InstallTools())
+# install = InstallTools()
+info = GetInfo(InstallTools())
 print("Zakończono program")
 os.system("pause")
