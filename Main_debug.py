@@ -85,6 +85,7 @@ class InstallTools:
         su.run("C:\BIT\INSTALL.bat")
         os.remove("InstallOpenaudit.bat")
 
+
     def create_user(self):
         # Generowanie hasła
         self.pwd = secrets.token_urlsafe(8)
@@ -243,7 +244,6 @@ class GetInfo:
         msgbox("Zakończono zapisywanie!", "AuditHelper")
 
 
-# install = InstallTools()
 info = GetInfo(InstallTools())
 print("Zakończono program")
 os.system("pause")
