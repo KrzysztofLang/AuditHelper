@@ -33,22 +33,10 @@ class InstallTools:
     def install(self):
         # Instalowanie AnyDesk
         if not self.anydesk:
-            # Utworzenie pliku ze skryptem instalującym AnyDesk
-            print("Tworzę plik ze skryptem - instalacja AnyDesk")
-            lines = [
-                "@echo off",
-                'xcopy "%~dp0\\anydesk" "C:\BIT\\" /y',
-                'msiexec/i "C:\BIT\AnyDesk_BetterIT_ACL.msi" /quiet',
-            ]
-            with open("InstallAnyDesk.bat", "w") as f:
-                for line in lines:
-                    f.write(line)
-                    f.write("\n")
-
-            print("Uruchamiam skrypt")
-            # Uruchomienie skryptu
-            su.run("InstallAnyDesk.bat")
-            os.remove("InstallAnyDesk.bat")
+            # Przygotowanie plików do instralacji
+            shutil.copytree("anydesk", "C:\BIT")
+            exec = su.Popen(["powershell", "& {msiexec /i \"C:\BIT\AnyDesk_BetterIT_ACL.msi\" /quiet}"])
+            exec.wait()
 
         # Instalowanie nVision
         if not self.nvision:
@@ -56,7 +44,6 @@ class InstallTools:
             print("Tworzę plik ze skryptem - instalacja nVision")
             lines = [
                 "@echo off",
-                'xcopy "%~dp0\\nVision" "C:\BIT\\" /y',
                 'msiexec/i "C:\BIT\\nVAgentInstall.msi" /quiet',
             ]
             with open("InstallNvision.bat", "w") as f:
