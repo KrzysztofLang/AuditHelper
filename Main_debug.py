@@ -7,6 +7,8 @@ import socket as so
 import subprocess as su
 import os
 import csv
+import secrets
+
 
 # Klasa odpowiadająca za instalację oprogramowania
 class InstallTools:
@@ -15,9 +17,10 @@ class InstallTools:
         self.check_installs()
         print("Czy wykryto AnyDesk: ", self.anydesk)
         print("Czy wykryto nVision: ", self.nvision)
+        self.install()
+        self.create_user()
 
     def check_installs(self):
-        
         # Sprawdzenie czy zainstalowano AnyDesk
         self.anydesk = os.path.exists(
             "C:\Program Files (x86)\AnyDesk-c035baa3"
@@ -26,17 +29,56 @@ class InstallTools:
         # Sprawdzenie czy zainstalowano nVision
         self.nvision = os.path.exists("C:\Program Files (x86)\Axence")
 
+    def install(self):
+        # Instalowanie AnyDesk
+        if not self.anydesk:
+            command = """xcopy "anydesk" "C:\BIT\"
+            msiexec /i "C:\BIT\AnyDesk_BetterIT_ACL.msi" /quiet"""
+            print(command)
+            exec = su.Popen(["powershell", "& {" + command + "}"])
+            exec.wait()
+
+        # Instalowanie nVision
+        if not self.nvision:
+            command = """xcopy "nVision" "C:\BIT\"
+            msiexec /i "C:\BIT\nVAgentInstall.msi" /quiet"""
+            print(command)
+            exec = su.Popen(["powershell", "& {" + command + "}"])
+            exec.wait()
+
+        # Dodanie zadania harmonogramu OpenAudIT
+        command = """xcopy "openaudit" "C:\BIT\"
+        start /w "" "C:\BIT\INSTALL.bat" """
+        print(command)
+        exec = su.Popen(["powershell", "& {" + command + "}"])
+        exec.wait()
+
+    def create_user(self):
+        # Generowanie hasła
+        self.pwd = secrets.token_urlsafe(8)
+
+        # Tworzenie użytkownika, dodanie do grupy Administratorów
+        command = (
+            """net user BITAdmin_test """
+            + '"{}"'.format(self.pwd)
+            + """ /add
+        net localgroup Administratorzy BITAdmin_test /add
+        net localgroup Administrators BITAdmin_test /add"""
+        )
+        print(command)
+        exec = su.Popen(["powershell", "& {" + command + "}"])
+        exec.wait()
 
 
 # Klasa odpowiadająca za zebranie danych
 class GetInfo:
-    def __init__(self) -> None:
+    def __init__(self, install) -> None:
         # Wywołanie głównej funkcji
         self.get_user_info()
         self.get_network_shares()
         self.hostname = so.gethostname()
         self.get_anydesk_id()
-        self.pwd = "test"
+        self.pwd = install.pwd
         print("Wywołuję główną funkcję")
         self.save_data()
 
@@ -58,7 +100,6 @@ class GetInfo:
         resume = 0
         self.shares = 0
         (self.shares, total, resume) = wn.NetUseEnum(None, 0, resume)
-
 
     # Sprawdzenie AnyDesk ID
     def get_anydesk_id(self):
@@ -95,7 +136,6 @@ class GetInfo:
         print("Usuwam pliki tymczasowe")
         os.remove("GetAnyDeskID.bat")
         os.remove("AnyDeskID.txt")
-
 
     # Główna funkcaj programu zbierająca dane i zapisująca do pliku
     def save_data(self):
@@ -170,7 +210,8 @@ class GetInfo:
         print("Zakończono zapisywanie")
         msgbox("Zakończono zapisywanie!", "AuditHelper")
 
-# install = InstallTools()
-info = GetInfo()
+
+install = InstallTools()
+# info = GetInfo(InstallTools())
 print("Zakończono program")
 os.system("pause")
