@@ -8,6 +8,7 @@ import subprocess as su
 import os
 import csv
 import secrets
+import shutil
 
 
 # Klasa odpowiadająca za instalację oprogramowania
@@ -84,7 +85,6 @@ class InstallTools:
         su.run("InstallOpenaudit.bat")
         su.run("C:\BIT\INSTALL.bat")
         os.remove("InstallOpenaudit.bat")
-
 
     def create_user(self):
         # Generowanie hasła
