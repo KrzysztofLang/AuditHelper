@@ -1,4 +1,13 @@
-from __future__ import generators
+"""Program ułatwiający wdrażanie SOI na komputerach, tj:
+Instalacja narzędzi - AnyDesk, nVision, OpenAudit
+Utworzenie konta administratora BITAdmin
+Zebranie niezbędnych informacji i zapisanie do pliku
+"""
+
+__author__ = "Krzysztof Lang"
+__version__ = "2.1"
+__status__ = "Production"
+
 from sympy import false, true
 from easygui import *
 import win32net as wn
@@ -13,6 +22,8 @@ import shutil
 
 # Klasa odpowiadająca za instalację oprogramowania
 class InstallTools:
+    """Instalacja narzędzi i utworzenie konta BITAdmin"""
+
     def __init__(self) -> None:
         # Wywołanie funkcji sprawdzającej czy zainstalowano nVision i AnyDesk
         self.check_installs()
@@ -91,6 +102,8 @@ class InstallTools:
 
 # Klasa odpowiadająca za zebranie danych
 class GetInfo:
+    """Zebranie informacji i zapisanie do pliku"""
+
     def __init__(self, install) -> None:
         # Wywołanie głównej funkcji
         self.get_user_info()
@@ -230,6 +243,6 @@ class GetInfo:
         msgbox("Zakończono zapisywanie!", "AuditHelper")
 
 
-info = GetInfo(InstallTools())
+GetInfo(InstallTools())
 print("Zakończono program")
 # os.system("pause")

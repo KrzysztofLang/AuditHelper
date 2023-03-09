@@ -2,14 +2,14 @@
 
 ## Instalacja
 
-- Instalacja programów
-  - AnyDesk
-  - nVision
-  - OpenAudIT
-- Konto administartora
-  - Utworzenie konta
-  - Generowanie hasła
+- [x] Instalacja programów
+  - [x] AnyDesk
+  - [x] nVision
+  - [x] OpenAudIT
+- [x] Konto administartora
+  - [x] Utworzenie konta
+  - [x] Generowanie hasła
 
 ## Zbieranie danych
 
-- Zapisywanie hasła BITAdmin
+- [x] Zapisywanie hasła BITAdmin
