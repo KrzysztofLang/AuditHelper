@@ -33,45 +33,44 @@ class InstallTools:
     def install(self):
         # Instalowanie AnyDesk
         if not self.anydesk:
-            # Przygotowanie plików do instralacji
-            shutil.copytree("anydesk", "C:\BIT")
-            exec = su.Popen(["powershell", "& {msiexec /i \"C:\BIT\AnyDesk_BetterIT_ACL.msi\" /quiet}"])
-            exec.wait()
+            if os.path.exists("anydesk"):
+                # Przygotowanie plików do instalacji
+                shutil.copytree("anydesk", "C:\BIT", dirs_exist_ok=True)
+                # Uruchomienie instalatora
+                exec = su.Popen(
+                    [
+                        "powershell",
+                        '& {msiexec /i "C:\BIT\AnyDesk_BetterIT_ACL.msi" /quiet}',
+                    ]
+                )
+                exec.wait()
+            else:
+                msgbox("Nie znaleziono instalatora Anydesk!", "AuditHelper")
 
         # Instalowanie nVision
         if not self.nvision:
-            # Utworzenie pliku ze skryptem instalujacym nVision
-            print("Tworzę plik ze skryptem - instalacja nVision")
-            lines = [
-                "@echo off",
-                'msiexec/i "C:\BIT\\nVAgentInstall.msi" /quiet',
-            ]
-            with open("InstallNvision.bat", "w") as f:
-                for line in lines:
-                    f.write(line)
-                    f.write("\n")
-
-            print("Uruchamiam skrypt")
-            # Uruchomienie skryptu
-            su.run("InstallNvision.bat")
-            os.remove("InstallNvision.bat")
+            if os.path.exists("nVision"):
+                # Przygotowanie plików do instralacji
+                shutil.copytree("nVision", "C:\BIT", dirs_exist_ok=True)
+                # Uruchomienie instalatora
+                exec = su.Popen(
+                    [
+                        "powershell",
+                        '& {msiexec /i "C:\BIT\nVAgentInstall.msi" /quiet}',
+                    ]
+                )
+                exec.wait()
+            else:
+                msgbox("Nie znaleziono instalatora nVision!", "AuditHelper")
 
         # Dodanie zadania harmonogramu OpenAudIT
-        print("Tworzę plik ze skryptem - instalacja OpenAudIT")
-        lines = [
-            "@echo off",
-            'xcopy "%~dp0\\openaudit" "C:\BIT\\" /y',
-        ]
-        with open("InstallOpenaudit.bat", "w") as f:
-            for line in lines:
-                f.write(line)
-                f.write("\n")
-
-        print("Uruchamiam skrypt")
-        # Uruchomienie skryptu
-        su.run("InstallOpenaudit.bat")
-        su.run("C:\BIT\INSTALL.bat")
-        os.remove("InstallOpenaudit.bat")
+        if os.path.exists("openaudit"):
+            # Przygotowanie plików do instralacji
+            shutil.copytree("openaudit", "C:\BIT", dirs_exist_ok=True)
+            # Uruchomienie instalatora
+            su.run("C:\BIT\INSTALL.bat")
+        else:
+            msgbox("Nie znaleziono instalatora OpenAudIT!", "AuditHelper")
 
     def create_user(self):
         # Generowanie hasła
@@ -233,4 +232,4 @@ class GetInfo:
 
 info = GetInfo(InstallTools())
 print("Zakończono program")
-os.system("pause")
+# os.system("pause")
