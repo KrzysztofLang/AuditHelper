@@ -6,7 +6,7 @@ Zebranie niezbędnych informacji i zapisanie do plików
 
 __author__ = "Krzysztof Lang"
 __version__ = "2.2"
-__status__ = "Dev"
+__status__ = "Production"
 
 from sympy import false, true
 from easygui import *
