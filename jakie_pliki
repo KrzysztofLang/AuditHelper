@@ -1,0 +1,5 @@
+dane.csv:
+Hostname,Nazwa BetterIT,User,Urzadzenia,Uwagi,AnyDesk ID,Lokalny,Zdalny
+
+bitwarden.csv:
+collections,type,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp

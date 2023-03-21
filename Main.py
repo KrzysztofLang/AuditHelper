@@ -1,12 +1,12 @@
 """Program ułatwiający wdrażanie SOI na komputerach, tj:
 Instalacja narzędzi - AnyDesk, nVision, OpenAudit
 Utworzenie konta administratora BITAdmin
-Zebranie niezbędnych informacji i zapisanie do pliku
+Zebranie niezbędnych informacji i zapisanie do plików
 """
 
 __author__ = "Krzysztof Lang"
-__version__ = "2.1"
-__status__ = "Production"
+__version__ = "2.2"
+__status__ = "Dev"
 
 from sympy import false, true
 from easygui import *
@@ -106,13 +106,16 @@ class GetInfo:
 
     def __init__(self, install) -> None:
         # Wywołanie głównej funkcji
+        print("Zbieram informacje")
         self.get_user_info()
         self.get_network_shares()
         self.hostname = so.gethostname()
         self.get_anydesk_id()
         self.pwd = install.pwd
-        print("Wywołuję główną funkcję")
-        self.save_data()
+        print("Zapisuję informacje o kumputerze")
+        self.save_info()
+        self.save_pass()
+        msgbox("Zakończono zapisywanie!", "AuditHelper")
 
     # Okno programu do wpisania informacji o komputerze
     def get_user_info(self):
@@ -123,7 +126,7 @@ class GetInfo:
 
         # Wyświetlenie okna, zwrócenie wpisanych informacji
         print("Wyświetlam okno do wpisania informacji")
-        self.info = multenterbox(msg, title, fieldNames)
+        self.name, self.user, self.notes = multenterbox(msg, title, fieldNames)
 
     # Zebranie informacji o podpiętych udziałąch sieciowych,
     # zwracane jako lista
@@ -170,12 +173,13 @@ class GetInfo:
         os.remove("AnyDeskID.txt")
 
     # Główna funkcaj programu zbierająca dane i zapisująca do pliku
-    def save_data(self):
+    def save_info(self):
         # Jeśli plik nie istnieje, tworzy go i dodaje linię z nagłówkami
+        filename = "dane_" + self.name[:3] + ".csv"
         print("Sprawdzam istnienie pliku")
-        if os.path.isfile("dane.csv") == 0:
+        if os.path.isfile(filename) == 0:
             print("Plik nie istnieje, tworzę")
-            with open("dane.csv", "w") as dane:
+            with open(filename, "w") as dane:
                 dane_writer = csv.writer(
                     dane,
                     delimiter=",",
@@ -185,21 +189,20 @@ class GetInfo:
                 )
                 dane_writer.writerow(
                     [
-                        "Nazwa BetterIT",
-                        "Użytkownik odpowiedzialny",
                         "Hostname",
-                        "AnyDesk ID",
-                        "Udział sieciowy lokalny",
-                        "Udział sieciowy zdalny",
-                        "Hasło BITAdmin",
+                        "Nazwa BetterIT",
+                        "User",
                         "Uwagi",
+                        "AnyDesk ID",
+                        "Lokalny",
+                        "Zdalny",
                     ]
                 )
             print("Utworzono plik")
 
         # Zapisuje zebrane dane do pliku
         print("Zapisuję dane do pliku")
-        with open("dane.csv", "a") as dane:
+        with open(filename, "a") as dane:
             dane_writer = csv.writer(
                 dane,
                 delimiter=",",
@@ -212,35 +215,88 @@ class GetInfo:
                 for share in self.shares:
                     dane_writer.writerow(
                         [
-                            self.info[0],
-                            self.info[1],
                             self.hostname,
+                            self.name,
+                            self.user,
+                            self.notes,
                             self.anyDeskID,
                             share["local"],
                             share["remote"],
-                            self.pwd,
-                            self.info[2],
                         ]
                     )
                     print("Zapisano linię danych - znaleziono dyski sieciowe")
             else:
                 dane_writer.writerow(
                     [
-                        self.info[0],
-                        self.info[1],
                         self.hostname,
+                        self.name,
+                        self.user,
+                        self.notes,
                         self.anyDeskID,
                         "",
                         "",
-                        self.pwd,
-                        self.info[2],
                     ]
                 )
                 print("Zapisano linię danych - brak dysków sieciowych")
 
         # Okno potwierdzające zakończenie działania
         print("Zakończono zapisywanie")
-        msgbox("Zakończono zapisywanie!", "AuditHelper")
+
+    def save_pass(self):
+        # Jeśli plik nie istnieje, tworzy go i dodaje linię z nagłówkami
+        filename = "pwd_" + self.name[:3] + ".csv"
+        print("Sprawdzam istnienie pliku")
+        if os.path.isfile(filename) == 0:
+            print("Plik nie istnieje, tworzę")
+            with open(filename, "w") as dane:
+                dane_writer = csv.writer(
+                    dane,
+                    delimiter=",",
+                    quotechar='"',
+                    quoting=csv.QUOTE_MINIMAL,
+                    lineterminator="\n",
+                )
+                dane_writer.writerow(
+                    [
+                        "collections",
+                        "type",
+                        "name",
+                        "notes",
+                        "fields",
+                        "reprompt",
+                        "login_uri",
+                        "login_username",
+                        "login_password",
+                        "login_totp",
+                    ]
+                )
+            print("Utworzono plik")
+
+        # Zapisuje zebrane dane do pliku
+        print("Zapisuję dane do pliku")
+        with open(filename, "a") as dane:
+            dane_writer = csv.writer(
+                dane,
+                delimiter=",",
+                quotechar='"',
+                quoting=csv.QUOTE_MINIMAL,
+                lineterminator="\n",
+            )
+            dane_writer.writerow(
+                [
+                    self.name[:3],
+                    "login",
+                    self.name,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "BITAdmin",
+                    self.pwd,
+                    "",
+                ]
+            )
+            print("Zapisano linię danych")
 
 
 GetInfo(InstallTools())
