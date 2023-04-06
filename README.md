@@ -1,5 +1,7 @@
 # Audit Helper
 
+Tak na prawdę to druga wersja programu, pierwsza napisana była z użyciem AutoIT i o niej nie rozmawiamy.
+
 Program mający ułatwić proces audytu lokalnego. Sposób działania:
 
 1. Wykrycie instalacji AnyDesk i agenta nVision
